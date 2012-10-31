@@ -8,6 +8,7 @@
   <link rel="stylesheet" type="text/css" href="lib/jasmine-1.2.0/jasmine.css">
   <script type="text/javascript" src="lib/jasmine-1.2.0/jasmine.js"></script>
   <script type="text/javascript" src="lib/jasmine-1.2.0/jasmine-html.js"></script>
+  <script type="text/javascript" src="lib/phantom-jasmine/console-runner.js"></script>
 
   <!-- include source files here... -->
   <script type="text/javascript" src="spec/SpecHelper.js"></script>
@@ -22,13 +23,17 @@
       var jasmineEnv = jasmine.getEnv();
       jasmineEnv.updateInterval = 1000;
 
-      var htmlReporter = new jasmine.HtmlReporter();
+      window.htmlReporter = new jasmine.HtmlReporter();
 
       jasmineEnv.addReporter(htmlReporter);
 
       jasmineEnv.specFilter = function(spec) {
         return htmlReporter.specFilter(spec);
       };
+
+      window.consoleReporter = new jasmine.ConsoleReporter();
+
+      jasmineEnv.addReporter(consoleReporter);
 
       var currentWindowOnload = window.onload;
 
