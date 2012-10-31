@@ -1,6 +1,20 @@
 # Jasmine Phantom.js example
 
-This is an example Jasmine test runner using Phantom.js
+This is an example Jasmine test runner using Phantom.js.
+
+The test suite used is the one that comes with the default Jasmine 1.2.0 distribution.
+
+# Usage
+
+1) Clone the repo
+
+````
+git clone git@github.com:jphpsf/jasmine-phantomjs.git
+cd jasmine-phantomjs
+````
+2) Install dependencies: get [Phantom.js from its website](http://phantomjs.org/download.html) and install the ruby dependency by running `bundle install`
+
+3) Run the tests: use `rake phantomjs` or `rake webdriver browser=firefox`
 
 ## License
 
