@@ -1,6 +1,6 @@
 # Jasmine Phantom.js example
 
-This is an example Jasmine test runner using Phantom.js.
+This is an example Jasmine test runner using Phantom.js. It also includes an example using Webdriver.
 
 The test suite used is the one that comes with the default Jasmine 1.2.0 distribution.
 
