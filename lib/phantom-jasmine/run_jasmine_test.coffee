@@ -8,10 +8,28 @@ class PhantomJasmineRunner
   constructor: (@page, @exit_func = phantom.exit) ->
     @tries = 0
     @max_tries = 10
+    @page.onInitialized = ->
+      page.evaluate(->
+        window["%resultsObj%"] = {}
+        window.__phantom_writeFile = (filename, text) ->
+          window["%resultsObj%"][filename] = text
+      )
 
   get_status: -> @page.evaluate(-> consoleReporter.status)
+  get_files: -> @page.evaluate(-> window["%resultsObj%"])
 
+  write_files: ->
+    fs = require 'fs'
+    files = @get_files()
+    for filename in Object.getOwnPropertyNames(files)
+      f = fs.open(filename, 'w')
+      try
+        f.writeLine(files[filename])
+      finally
+        f.close()
+ 
   terminate: ->
+    @write_files()
     switch @get_status()
       when "success" then @exit_func 0
       when "fail"    then @exit_func 1
@@ -30,17 +48,7 @@ runner = new PhantomJasmineRunner(page)
 page.onConsoleMessage = (msg) ->
   console.log msg
 
-  # Terminate when the reporter singals that testing is over.
-  # We cannot use a callback function for this (because page.evaluate is sandboxed),
-  # so we have to *observe* the website.
-  if msg == "ConsoleReporter finished"
-    runner.terminate()
-
 address = phantom.args[0]
 
 page.open address, (status) ->
-  if status != "success"
-    console.log "can't load the address!"
-    phantom.exit 1
-
-  # Now we wait until onConsoleMessage reads the termination signal from the log.
+  runner.terminate()
