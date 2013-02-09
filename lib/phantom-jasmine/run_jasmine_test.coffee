@@ -8,10 +8,28 @@ class PhantomJasmineRunner
   constructor: (@page, @exit_func = phantom.exit) ->
     @tries = 0
     @max_tries = 10
+    @page.onInitialized = ->
+      page.evaluate(->
+        window["%resultsObj%"] = {}
+        window.__phantom_writeFile = (filename, text) ->
+          window["%resultsObj%"][filename] = text
+      )
 
   get_status: -> @page.evaluate(-> consoleReporter.status)
+  get_files: -> @page.evaluate(-> window["%resultsObj%"])
 
+  write_files: ->
+    fs = require 'fs'
+    files = @get_files()
+    for filename in Object.getOwnPropertyNames(files)
+      f = fs.open(filename, 'w')
+      try
+        f.writeLine(files[filename])
+      finally
+        f.close()
+ 
   terminate: ->
+    @write_files()
     switch @get_status()
       when "success" then @exit_func 0
       when "fail"    then @exit_func 1
